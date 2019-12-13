@@ -12,8 +12,11 @@ Version in format major.minor.patch
 - Major changes in driver and additional driver increase minor
 - Major changes in core increase major
 
+### Changelog
+[CHANGELOG.md](https://github.com/Elektropioneer/RPI_Robot_Framework/CHANGELOG.md) file contain all updates and descriptions of each version
+
 ## Authors
-- Miloš Zivlak (milos.zivlak@sensa-group.net) - [zivlak.rs](http://zivlak.rs)
+- Miloš Zivlak (milos.zivlak@sensa-group.net) - Arthitecture and initial implementation - [zivlak.rs](http://zivlak.rs)
 
 ## Todo
 Check [TODO.md](https://github.com/Elektropioneer/RPI_Robot_Framework/TODO.md) file for details
