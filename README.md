@@ -13,13 +13,13 @@ Version in format major.minor.patch
 - Major changes in core increase major
 
 ### Changelog
-[CHANGELOG.md](https://github.com/Elektropioneer/RPI_Robot_Framework/master/CHANGELOG.md) file contain all updates and descriptions of each version
+[CHANGELOG.md](https://github.com/Elektropioneer/RPI_Robot_Framework/blob/master/CHANGELOG.md) file contain all updates and descriptions of each version
 
 ## Authors
 - Miloš Zivlak (milos.zivlak@sensa-group.net) - Arthitecture and initial implementation - [zivlak.rs](http://zivlak.rs)
 
 ## Todo
-Check [TODO.md](https://github.com/Elektropioneer/master/RPI_Robot_Framework/TODO.md) file for details
+Check [TODO.md](https://github.com/Elektropioneer/blob/master/RPI_Robot_Framework/TODO.md) file for details
 
 ## License
-This project is licensed under the GPL v3 License - see the [LICENSE.md](https://github.com/Elektropioneer/master/RPI_Robot_Framework/LICENSE.md) file for details
+This project is licensed under the GPL v3 License - see the [LICENSE.md](https://github.com/Elektropioneer/blob/master/RPI_Robot_Framework/LICENSE.md) file for details
