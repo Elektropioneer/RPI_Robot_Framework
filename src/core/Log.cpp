@@ -15,12 +15,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/Debug.h"
+#include "core/Log.h"
 
-Debug::Debug(void)
+#include <spdlog/sinks/basic_file_sink.h>
+
+#include "core/Settings.h"
+
+Log::Log(void)
+{
+    /*
+     * TODO: Implement logg levl configuration (using map)
+     */
+    try
+    {
+        auto settings = Settings().jsonSettings()["Logging"];
+        std::string logName = settings["Name"];
+        std::string logFile = settings["File"];
+        //std::string logLevel = settings["Level"];
+
+        m_logger = spdlog::basic_logger_mt(logName, logFile);
+        m_logger->set_level(spdlog::level::trace);
+    }
+    catch (...)
+    {
+    }
+}
+
+Log::~Log(void)
 {
 }
 
-Debug::~Debug(void)
+Log &Log::log(void)
 {
+    static Log log;
+    return log;
 }

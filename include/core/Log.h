@@ -15,28 +15,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/RobotFramework.h"
+#ifndef _CORE_LOG_H_
+#define _CORE_LOG_H_
 
-#include "core/Log.h"
+#include <memory>
+#include <spdlog/spdlog.h>
 
-RobotFramework::RobotFramework(int argc, char *argv[])
+class Log
 {
-    LOG_INFO("Initialization start");
+public:
+    Log(const Log &) = delete;
+    void operator=(const Log &) = delete;
+    virtual ~Log(void);
 
-    LOG_INFO("Initialization end");
-}
+    static Log &log(void);
 
-RobotFramework::~RobotFramework(void)
-{
-}
+    inline std::shared_ptr<spdlog::logger> coreLogger() { return m_logger; }
 
-void RobotFramework::run(void)
-{
-    LOG_INFO("Service start");
+private:
+    Log(void);
 
-    /*
-     * TODO: Start Lua and do logic
-     */
+    std::shared_ptr<spdlog::logger> m_logger;
+};
 
-    LOG_INFO("Service end");
-}
+#define LOG_ERROR(...) Log::log().coreLogger()->error(__VA_ARGS__)
+#define LOG_WARN(...) Log::log().coreLogger()->warn(__VA_ARGS__)
+#define LOG_INFO(...) Log::log().coreLogger()->info(__VA_ARGS__)
+#define LOG_TRACE(...) Log::log().coreLogger()->trace(__VA_ARGS__)
+
+#endif // _CORE_LOG_H_

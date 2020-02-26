@@ -27,22 +27,32 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(include/)
 include_directories(${CMAKE_BINARY_DIR})
+include_directories(lib/spdlog/include)
+
+# JSON Library
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(lib/json)
 
 set(project_SRC
+    src/core/Settings.cpp
+    src/core/Log.cpp
     src/core/RobotFramework.cpp
 
     src/main.cpp
 )
 
 set(project_INCLUDE
-    include/core/RobotFramework.h
+)
+
+set(project_LIB
+    nlohmann_json::nlohmann_json
 )
 
 # Tell CMake to create the rrf executable
-add_executable(rrf ${project_SRC} ${project_INCLUDE})
+add_executable(rrf ${project_SRC})
 
 # Tell CMake to link the rrf executable
-target_link_libraries(rrf)
+target_link_libraries(rrf ${project_LIB})
 
 # Install the executable
 install(TARGETS rrf DESTINATION bin)

@@ -15,28 +15,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/RobotFramework.h"
+#ifndef _CORE_SETTINGS_H_
+#define _CORE_SETTINGS_H_
 
-#include "core/Log.h"
+#include <nlohmann/json.hpp>
 
-RobotFramework::RobotFramework(int argc, char *argv[])
+using json = nlohmann::json;
+
+class Settings
 {
-    LOG_INFO("Initialization start");
+public:
+    Settings(void);
+    virtual ~Settings(void);
 
-    LOG_INFO("Initialization end");
-}
+    inline json &jsonSettings(void) { return m_json; }
 
-RobotFramework::~RobotFramework(void)
-{
-}
+private:
+    json m_json;
 
-void RobotFramework::run(void)
-{
-    LOG_INFO("Service start");
+    static const char *s_settingsPath;
+};
 
-    /*
-     * TODO: Start Lua and do logic
-     */
 
-    LOG_INFO("Service end");
-}
+#endif // _CORE_SETTINGS_H_

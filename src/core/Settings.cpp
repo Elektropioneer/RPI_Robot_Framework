@@ -15,11 +15,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Debug
-{
-public:
-    Debug(void);
-    virtual ~Debug(void);
+#include "core/Settings.h"
 
-private:
-};
+#include <fstream>
+
+//const char *Settings::s_settingsPath = "/ets/rrf.conf";
+const char *Settings::s_settingsPath = "rrf.conf";
+
+Settings::Settings(void)
+{
+    std::ifstream iFile(s_settingsPath);
+    iFile >> m_json;
+}
+
+Settings::~Settings(void)
+{
+}
