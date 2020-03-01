@@ -14,19 +14,3 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _CORE_ROBOT_FRAMEWORK_H_
-#define _CORE_ROBOT_FRAMEWORK_H_
-
-class RobotFramework
-{
-public:
-    RobotFramework(int argc, char *argv[]);
-    virtual ~RobotFramework(void);
-
-    void run(void);
-
-private:
-};
-
-#endif // _CORE_ROBOT_FRAMEWORK_H_

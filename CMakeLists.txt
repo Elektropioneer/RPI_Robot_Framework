@@ -36,6 +36,7 @@ add_subdirectory(lib/json)
 set(project_SRC
     src/core/Settings.cpp
     src/core/Log.cpp
+    src/core/SerialMessage.cpp
     src/core/RobotFramework.cpp
 
     src/main.cpp

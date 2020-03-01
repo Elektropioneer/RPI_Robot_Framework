@@ -15,18 +15,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CORE_ROBOT_FRAMEWORK_H_
-#define _CORE_ROBOT_FRAMEWORK_H_
+#ifndef _CORE_SERIAL_MESSAGE_H_
+#define _CORE_SERIAL_MESSAGE_H_
 
-class RobotFramework
+#include <vector>
+#include <initializer_list>
+#include <cstdint>
+
+class SerialMessage
 {
 public:
-    RobotFramework(int argc, char *argv[]);
-    virtual ~RobotFramework(void);
+    SerialMessage(void);
+    SerialMessage(const std::initializer_list<uint8_t> &msg);
+    ~SerialMessage(void);
 
-    void run(void);
+    uint8_t getCommand1(bool *ok = nullptr);
+    uint8_t getCommand2(bool *ok = nullptr);
+    uint8_t at(int index, bool *ok = nullptr);
+    bool set(int index, uint8_t value);
 
 private:
+    std::vector<uint8_t> m_message;
 };
 
-#endif // _CORE_ROBOT_FRAMEWORK_H_
+#endif // _CORE_SERIAL_MESSAGE_H_
