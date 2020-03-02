@@ -18,15 +18,28 @@
 #ifndef _CORE_ROBOT_FRAMEWORK_H_
 #define _CORE_ROBOT_FRAMEWORK_H_
 
+#include <vector>
+#include <lua.hpp>
+
+#include "core/LuaPositionEntry.h"
+#include "core/LuaTimerEntry.h"
+
 class RobotFramework
 {
 public:
     RobotFramework(int argc, char *argv[]);
     virtual ~RobotFramework(void);
 
-    void run(void);
+    int run(void);
 
 private:
+    void loadScript(void);
+    void extractPositions(void);
+    void extractTimers(void);
+
+    lua_State *m_lua;
+    std::vector<LuaPositionEntry> m_luaPositionEtries;
+    std::vector<LuaTimerEntry> m_luaTimerEntries;
 };
 
 #endif // _CORE_ROBOT_FRAMEWORK_H_

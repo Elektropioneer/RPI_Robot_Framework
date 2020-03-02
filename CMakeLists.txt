@@ -22,12 +22,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+find_package(Lua51 REQUIRED)
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(include/)
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(lib/spdlog/include)
+include_directories(${LUA_INCLUDE_DIR})
 
 # JSON Library
 set(JSON_BuildTests OFF CACHE INTERNAL "")
@@ -47,6 +50,7 @@ set(project_INCLUDE
 
 set(project_LIB
     nlohmann_json::nlohmann_json
+    ${LUA_LIBRARIES}
 )
 
 # Tell CMake to create the rrf executable

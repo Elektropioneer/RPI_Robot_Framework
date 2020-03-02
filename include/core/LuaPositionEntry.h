@@ -15,10 +15,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/RobotFramework.h"
+#ifndef _CORE_LUA_POSITION_ENTRY_H_
+#define _CORE_LUA_POSITION_ENTRY_H_
 
-int main(int argc, char *argv[])
+#include <string>
+
+struct LuaPositionEntry
 {
-    RobotFramework rrf(argc, argv);
-    return rrf.run();
-}
+    int x;
+    int y;
+    std::string callback;
+};
+
+#endif // _CORE_LUA_POSITION_ENTRY_H_

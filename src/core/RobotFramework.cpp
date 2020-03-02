@@ -17,26 +17,108 @@
 
 #include "core/RobotFramework.h"
 
+#include <iostream>                                     // TODO: Only for debug
+
 #include "core/Log.h"
 
 RobotFramework::RobotFramework(int argc, char *argv[])
+    : m_lua(nullptr)
 {
     LOG_INFO("Initialization start");
+
+    m_lua = luaL_newstate();
+    loadScript();
 
     LOG_INFO("Initialization end");
 }
 
 RobotFramework::~RobotFramework(void)
 {
+    if (m_lua)
+    {
+        lua_close(m_lua);
+    }
 }
 
-void RobotFramework::run(void)
+int RobotFramework::run(void)
 {
     LOG_INFO("Service start");
 
-    /*
-     * TODO: Start Lua and do logic
-     */
+    for (auto posEntry : m_luaPositionEtries)
+    {
+        /*
+         * TODO: Go to x, y and call lua function
+         */
+    }
 
     LOG_INFO("Service end");
+
+    return 0;
+}
+
+
+void RobotFramework::loadScript(void)
+{
+    std::string scriptName = "test.lua";
+
+    luaL_dofile(m_lua, scriptName.c_str());
+
+    extractPositions();
+    extractTimers();
+}
+
+void RobotFramework::extractPositions(void)
+{
+    lua_getglobal(m_lua, "positions");
+    lua_pushnil(m_lua);
+    while (lua_next(m_lua, -2))
+    {
+        LuaPositionEntry entry;
+
+        lua_pushnumber(m_lua, 1);
+        lua_gettable(m_lua, -2);
+        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
+        lua_pop(m_lua, 1);
+
+        lua_pushnumber(m_lua, 1);
+        lua_gettable(m_lua, -2);
+        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
+        lua_pop(m_lua, 1);
+
+        lua_pushnumber(m_lua, 1);
+        lua_gettable(m_lua, -2);
+        entry.callback = lua_tostring(m_lua, -1);
+        lua_pop(m_lua, 1);
+
+        m_luaPositionEtries.push_back(entry);
+        lua_pop(m_lua, 1);
+    }
+}
+
+void RobotFramework::extractTimers(void)
+{
+    lua_getglobal(m_lua, "timers");
+    lua_pushnil(m_lua);
+    while (lua_next(m_lua, -2))
+    {
+        LuaPositionEntry entry;
+
+        lua_pushnumber(m_lua, 1);
+        lua_gettable(m_lua, -2);
+        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
+        lua_pop(m_lua, 1);
+
+        lua_pushnumber(m_lua, 1);
+        lua_gettable(m_lua, -2);
+        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
+        lua_pop(m_lua, 1);
+
+        lua_pushnumber(m_lua, 1);
+        lua_gettable(m_lua, -2);
+        entry.callback = lua_tostring(m_lua, -1);
+        lua_pop(m_lua, 1);
+
+        m_luaPositionEtries.push_back(entry);
+        lua_pop(m_lua, 1);
+    }
 }
