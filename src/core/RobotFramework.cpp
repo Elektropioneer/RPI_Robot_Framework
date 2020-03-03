@@ -145,7 +145,7 @@ void RobotFramework::extractTimers(void)
         lua_gettable(m_lua, -2);
         entry.callbackLuaRef = luaL_ref(m_lua, 1);
 
-        m_luaPositionEtries.push_back(entry);
+        m_luaTimerEntries.push_back(entry);
         lua_pop(m_lua, 1);
     }
     lua_pop(m_lua, 1);
