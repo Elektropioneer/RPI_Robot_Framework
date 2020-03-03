@@ -24,7 +24,7 @@ struct LuaPositionEntry
 {
     int x;
     int y;
-    std::string callback;
+    int callbackLuaRef;
 };
 
 #endif // _CORE_LUA_POSITION_ENTRY_H_

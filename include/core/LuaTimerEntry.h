@@ -23,7 +23,7 @@
 struct LuaTimerEntry
 {
     int tick;
-    std::string callback;
+    int callbackLuaRef;
 };
 
 #endif // _CORE_LUA_TIMER_ENTRY_H_

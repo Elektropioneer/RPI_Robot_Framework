@@ -21,6 +21,8 @@
 
 #include "core/Log.h"
 
+static void _stackDump(lua_State *L);                   // For debugging
+
 RobotFramework::RobotFramework(int argc, char *argv[])
     : m_lua(nullptr)
 {
@@ -34,6 +36,18 @@ RobotFramework::RobotFramework(int argc, char *argv[])
 
 RobotFramework::~RobotFramework(void)
 {
+    lua_getglobal(m_lua, "__references__");
+
+    for (auto entry : m_luaPositionEtries)
+    {
+        luaL_unref(m_lua, -1, entry.callbackLuaRef);
+    }
+
+    for (auto entry : m_luaPositionEtries)
+    {
+        luaL_unref(m_lua, -1, entry.callbackLuaRef);
+    }
+
     if (m_lua)
     {
         lua_close(m_lua);
@@ -44,18 +58,28 @@ int RobotFramework::run(void)
 {
     LOG_INFO("Service start");
 
-    for (auto posEntry : m_luaPositionEtries)
+    lua_getglobal(m_lua, "__references__");
+    for (auto entry : m_luaPositionEtries)
     {
-        /*
-         * TODO: Go to x, y and call lua function
-         */
+        lua_rawgeti(m_lua, -1, entry.callbackLuaRef);
+        int status = lua_pcall(m_lua, 0, 1, 0);
+        if (status != LUA_OK)
+        {
+            LOG_ERROR("Error while executeing lua funtions: ", status);
+            break;
+        }
+        if (!lua_toboolean(m_lua, -1))
+        {
+            break;
+        }
+        lua_pop(m_lua, 1);
     }
+    lua_pop(m_lua, 1);
 
     LOG_INFO("Service end");
 
     return 0;
 }
-
 
 void RobotFramework::loadScript(void)
 {
@@ -63,12 +87,16 @@ void RobotFramework::loadScript(void)
 
     luaL_dofile(m_lua, scriptName.c_str());
 
+    lua_newtable(m_lua);
+    lua_setglobal(m_lua, "__references__");
+
     extractPositions();
     extractTimers();
 }
 
 void RobotFramework::extractPositions(void)
 {
+    lua_getglobal(m_lua, "__references__");
     lua_getglobal(m_lua, "positions");
     lua_pushnil(m_lua);
     while (lua_next(m_lua, -2))
@@ -80,45 +108,69 @@ void RobotFramework::extractPositions(void)
         entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
         lua_pop(m_lua, 1);
 
-        lua_pushnumber(m_lua, 1);
+        lua_pushnumber(m_lua, 2);
         lua_gettable(m_lua, -2);
-        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
+        entry.y = static_cast<int>(lua_tonumber(m_lua, -1));
         lua_pop(m_lua, 1);
 
-        lua_pushnumber(m_lua, 1);
+        lua_pushnumber(m_lua, 3);
         lua_gettable(m_lua, -2);
-        entry.callback = lua_tostring(m_lua, -1);
-        lua_pop(m_lua, 1);
+        entry.callbackLuaRef = luaL_ref(m_lua, 1);
 
         m_luaPositionEtries.push_back(entry);
         lua_pop(m_lua, 1);
     }
+    lua_pop(m_lua, 1);
+    lua_pop(m_lua, 1);
 }
 
 void RobotFramework::extractTimers(void)
 {
-    lua_getglobal(m_lua, "timers");
+    lua_pop(m_lua, 1);
+    lua_pop(m_lua, 1);
+
+    lua_getglobal(m_lua, "__references__");
+    lua_getglobal(m_lua, "positions");
     lua_pushnil(m_lua);
     while (lua_next(m_lua, -2))
     {
-        LuaPositionEntry entry;
+        LuaTimerEntry entry;
 
         lua_pushnumber(m_lua, 1);
         lua_gettable(m_lua, -2);
-        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
+        entry.tick = static_cast<int>(lua_tonumber(m_lua, -1));
         lua_pop(m_lua, 1);
 
-        lua_pushnumber(m_lua, 1);
+        lua_pushnumber(m_lua, 3);
         lua_gettable(m_lua, -2);
-        entry.x = static_cast<int>(lua_tonumber(m_lua, -1));
-        lua_pop(m_lua, 1);
-
-        lua_pushnumber(m_lua, 1);
-        lua_gettable(m_lua, -2);
-        entry.callback = lua_tostring(m_lua, -1);
-        lua_pop(m_lua, 1);
+        entry.callbackLuaRef = luaL_ref(m_lua, 1);
 
         m_luaPositionEtries.push_back(entry);
         lua_pop(m_lua, 1);
     }
+    lua_pop(m_lua, 1);
+    lua_pop(m_lua, 1);
+}
+
+static void _stackDump(lua_State *L)
+{
+    int i=lua_gettop(L);
+    printf(" ----------------  Stack Dump ----------------\n" );
+    while(  i   ) {
+    int t = lua_type(L, i);
+    switch (t) {
+    case LUA_TSTRING:
+        printf("%d:`%s'\n", i, lua_tostring(L, i));
+        break;
+    case LUA_TBOOLEAN:
+        printf("%d: %s\n",i,lua_toboolean(L, i) ? "true" : "false");
+        break;
+    case LUA_TNUMBER:
+        printf("%d: %g\n",  i, lua_tonumber(L, i));
+        break;
+    default: printf("%d: %s\n", i, lua_typename(L, t)); break;
+    }
+        i--;
+    }
+    printf("--------------- Stack Dump Finished ---------------\n" );
 }

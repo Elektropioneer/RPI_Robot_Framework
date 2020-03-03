@@ -43,4 +43,9 @@ private:
 #define LOG_INFO(...) Log::log().coreLogger()->info(__VA_ARGS__)
 #define LOG_TRACE(...) Log::log().coreLogger()->trace(__VA_ARGS__)
 
+#define LUA_LOG_ERROR(...) Log::log().coreLogger()->error(__VA_ARGS__)
+#define LUA_LOG_WARN(...) Log::log().coreLogger()->warn(__VA_ARGS__)
+#define LUA_LOG_INFO(...) Log::log().coreLogger()->info(__VA_ARGS__)
+#define LUA_LOG_TRACE(...) Log::log().coreLogger()->trace(__VA_ARGS__)
+
 #endif // _CORE_LOG_H_
