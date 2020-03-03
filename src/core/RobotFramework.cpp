@@ -70,6 +70,7 @@ int RobotFramework::run(void)
         }
         if (!lua_toboolean(m_lua, -1))
         {
+            LOG_WARN("Lua function return false");
             break;
         }
         lua_pop(m_lua, 1);
@@ -126,9 +127,6 @@ void RobotFramework::extractPositions(void)
 
 void RobotFramework::extractTimers(void)
 {
-    lua_pop(m_lua, 1);
-    lua_pop(m_lua, 1);
-
     lua_getglobal(m_lua, "__references__");
     lua_getglobal(m_lua, "positions");
     lua_pushnil(m_lua);
@@ -141,7 +139,7 @@ void RobotFramework::extractTimers(void)
         entry.tick = static_cast<int>(lua_tonumber(m_lua, -1));
         lua_pop(m_lua, 1);
 
-        lua_pushnumber(m_lua, 3);
+        lua_pushnumber(m_lua, 2);
         lua_gettable(m_lua, -2);
         entry.callbackLuaRef = luaL_ref(m_lua, 1);
 
