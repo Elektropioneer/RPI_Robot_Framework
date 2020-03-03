@@ -29,6 +29,7 @@ RobotFramework::RobotFramework(int argc, char *argv[])
     LOG_INFO("Initialization start");
 
     m_lua = luaL_newstate();
+    luaL_openlibs(m_lua);
     loadScript();
 
     LOG_INFO("Initialization end");
@@ -152,7 +153,7 @@ void RobotFramework::extractTimers(void)
 
 static void _stackDump(lua_State *L)
 {
-    int i=lua_gettop(L);
+    int i = lua_gettop(L);
     printf(" ----------------  Stack Dump ----------------\n" );
     while(  i   ) {
     int t = lua_type(L, i);
