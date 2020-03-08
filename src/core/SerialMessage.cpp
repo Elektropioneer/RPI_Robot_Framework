@@ -112,3 +112,16 @@ bool SerialMessage::set(int index, uint8_t value)
 
     return true;
 }
+
+bool SerialMessage::append(uint8_t value)
+{
+    // TODO: Insert value in message vector
+    return true;
+}
+
+SerialMessage &operator<<(SerialMessage &msg, uint8_t data)
+{
+    msg.append(data)
+
+    return msg;
+}
