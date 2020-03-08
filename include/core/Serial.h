@@ -18,6 +18,10 @@
 #ifndef _CORE_SERIAL_H_
 #define _CORE_SERIAL_H_
 
+#include <functional>
+
+#include "SerialMessage.h"
+
 class Serial
 {
 public:
@@ -25,15 +29,17 @@ public:
     void operator=(const Serial &) = delete;
     ~Serial(void);
 
-    Serial &serial(void);
+    static Serial &serial(void);
 
     inline void setBlocking(bool blocking) { m_blocking = blocking; }
 
     bool open(void);
     bool close(void);
 
-    bool send(uint8_t msg);
-    bool sendReceive(uint8_t msg, bool &ok);
+    bool send(const SerialMessage &msg);
+    SerialMessage sendReceive(uint8_t msg, bool &ok);
+
+    void subscribe(uint8_t cmd1, uint8_t cmd2, const std::function<void(const SerialMessage &msg)> &callback);
 
 private:
     Serial(void);

@@ -33,9 +33,12 @@ public:
     uint8_t getCommand2(bool *ok = nullptr);
     uint8_t at(int index, bool *ok = nullptr);
     bool set(int index, uint8_t value);
+    bool append(uint8_t value);
 
 private:
     std::vector<uint8_t> m_message;
 };
+
+SerialMessage &operator<<(SerialMessage &msg, uint8_t data);
 
 #endif // _CORE_SERIAL_MESSAGE_H_
