@@ -24,6 +24,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Lua51 REQUIRED)
 
+find_package(Threads REQUIRED)
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -31,6 +33,7 @@ include_directories(include/)
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(lib/spdlog/include)
 include_directories(${LUA_INCLUDE_DIR})
+include_directories(lib/WiringPi)
 
 # JSON Library
 set(JSON_BuildTests OFF CACHE INTERNAL "")
@@ -40,6 +43,7 @@ set(project_SRC
     src/core/Settings.cpp
     src/core/Log.cpp
     src/core/SerialMessage.cpp
+    src/core/Serial.cpp
     src/core/RobotFramework.cpp
 
     src/main.cpp
@@ -53,11 +57,15 @@ set(project_LIB
     ${LUA_LIBRARIES}
 )
 
+set(project_LIB_SRC
+    lib/WiringPi/wiringSerial.c
+)
+
 # Tell CMake to create the rrf executable
-add_executable(rrf ${project_SRC})
+add_executable(rrf ${project_SRC} ${project_LIB_SRC})
 
 # Tell CMake to link the rrf executable
-target_link_libraries(rrf ${project_LIB})
+target_link_libraries(rrf ${project_LIB} Threads::Threads)
 
 # Install the executable
 install(TARGETS rrf DESTINATION bin)

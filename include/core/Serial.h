@@ -18,7 +18,11 @@
 #ifndef _CORE_SERIAL_H_
 #define _CORE_SERIAL_H_
 
+#include <string>
 #include <functional>
+#include <unordered_map>
+#include <thread>
+#include <mutex>
 
 #include "SerialMessage.h"
 
@@ -31,21 +35,32 @@ public:
 
     static Serial &serial(void);
 
-    inline void setBlocking(bool blocking) { m_blocking = blocking; }
-
     bool open(void);
     bool close(void);
 
     bool send(const SerialMessage &msg);
-    SerialMessage sendReceive(uint8_t msg, bool &ok);
+    SerialMessage sendReceive(const SerialMessage &msg);
 
     void subscribe(uint8_t cmd1, uint8_t cmd2, const std::function<void(const SerialMessage &msg)> &callback);
 
 private:
     Serial(void);
+    void startAsyncReader(void);
 
-    bool m_blocking;
-    std::function<void(uint8_t )> m_receiveCallback;
+    static const std::string s_port;
+    static const int s_baud;
+    static const int s_readBufferMaxSize;
+
+    int m_fd;
+
+    std::unordered_map<uint16_t, std::function<void(const SerialMessage &msg)>> m_readWaitCallbacks;
+    std::unordered_map<uint16_t, std::function<void(const SerialMessage &msg)>> m_readSubscribeCallbacks;
+
+    std::thread m_readerThread;
+    std::mutex m_readerMutex;
+
+    std::vector<uint8_t> m_readBuffer;
+    uint8_t m_readBufferSize;
 };
 
 #endif // _CORE_SERIAL_H_

@@ -44,10 +44,7 @@ bool Odometry::setMaxSpeed(int speed)
     msg << 'V';
     msg << (uint8_t)(speed & 0xFF);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
 bool Odometry::setPosition(int x, int y, int orientation)
@@ -60,13 +57,10 @@ bool Odometry::setPosition(int x, int y, int orientation)
     msg << (uint8_t)(x & 0xFF);
     msg << (uint8_t)((y >> 8) & 0xFF);
     msg << (uint8_t)(y & 0xFF);
-    msg << (uint8_t)((angle >> 8) & 0xFF);
-    msg << (uint8_t)(angle & 0xFF);
+    msg << (uint8_t)((orientation >> 8) & 0xFF);
+    msg << (uint8_t)(orientation & 0xFF);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
 bool Odometry::hardStop(void)
@@ -76,10 +70,7 @@ bool Odometry::hardStop(void)
 
     msg << 'S';
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
 bool Odometry::softStop(void)
@@ -87,15 +78,12 @@ bool Odometry::softStop(void)
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
 
-    msg << 's'
+    msg << 's';
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
-bool Odometry::moveForward(int distance)
+OdometryStatus Odometry::moveForward(int distance)
 {
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
@@ -105,13 +93,10 @@ bool Odometry::moveForward(int distance)
     msg << (uint8_t)(distance & 0xFF);
     msg << (uint8_t)(DirectionForward);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
-bool Odometry::moveBackward(int distance)
+OdometryStatus Odometry::moveBackward(int distance)
 {
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
@@ -121,13 +106,10 @@ bool Odometry::moveBackward(int distance)
     msg << (uint8_t)(distance & 0xFF);
     msg << (uint8_t)(DirectionBackward);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
-bool Odometry::rotate(int angle)
+OdometryStatus Odometry::rotate(int angle)
 {
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
@@ -136,13 +118,10 @@ bool Odometry::rotate(int angle)
     msg << (uint8_t)((angle >> 8) & 0xFF);
     msg << (uint8_t)(angle & 0xFF);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
-bool Odometry::rotateAbsolute(int angle)
+OdometryStatus Odometry::rotateAbsolute(int angle)
 {
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
@@ -151,13 +130,10 @@ bool Odometry::rotateAbsolute(int angle)
     msg << (uint8_t)((angle >> 8) & 0xFF);
     msg << (uint8_t)(angle & 0xFF);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
-bool Odometry::gotoXY(int x, int y, int speed, Direction direction)
+OdometryStatus Odometry::gotoXY(int x, int y, int speed, Direction direction)
 {
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
@@ -170,13 +146,10 @@ bool Odometry::gotoXY(int x, int y, int speed, Direction direction)
     msg << (uint8_t)(speed & 0xFF);
     msg << (uint8_t)(direction & 0xFF);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
 }
 
-bool Odometry::arc(int xc, int yc, int fi, Direction direction)
+OdometryStatus Odometry::arc(int xc, int yc, int fi, Direction direction)
 {
     Serial &serial = Serial::serial();
     SerialMessage msg{ _ODOMETRY_CMD };
@@ -190,8 +163,13 @@ bool Odometry::arc(int xc, int yc, int fi, Direction direction)
     msg << (uint8_t)(fi & 0xFF);
     msg << (uint8_t)(direction & 0xFF);
 
-    if (!serial.send(msg))
-    {
-        return false;
-    }
+    serial.send(msg);
+}
+
+void Odometry::endMatch(void)
+{
+}
+
+bool Odometry::waitUntilDone(OdometryStatus *odometryStatus)
+{
 }
