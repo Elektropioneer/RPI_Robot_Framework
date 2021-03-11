@@ -23,44 +23,44 @@
 
 struct OdometryStatus
 {
-    int x;
-    int y;
-    int angle;
-    int status;
-    bool ok;
+  int x;
+  int y;
+  int angle;
+  int status;
+  bool ok;
 };
 
 class Odometry
 {
 public:
-    Odometry(void);
-    virtual ~Odometry(void);
+  Odometry(void);
+  virtual ~Odometry(void);
 
-    enum Direction
-    {
-        DirectionForward = 1,
-        DirectionBackward = -1
-    };
+  enum Direction
+  {
+    DirectionForward = 1,
+    DirectionBackward = -1
+  };
 
-    OdometryStatus getInfo(void);
+  OdometryStatus getInfo(void);
 
-    bool setMaxSpeed(int speed);
-    bool setPosition(int x, int y, int orientation);
+  bool setMaxSpeed(int speed);
+  bool setPosition(int x, int y, int orientation);
 
-    bool hardStop(void);
-    bool softStop(void);
+  bool hardStop(void);
+  bool softStop(void);
 
-    OdometryStatus moveForward(int distance);
-    OdometryStatus moveBackward(int distance);
-    OdometryStatus rotate(int angle);
-    OdometryStatus rotateAbsolute(int angle);
-    OdometryStatus gotoXY(int x, int y, int speed, Direction direction);
-    OdometryStatus arc(int xc, int yc, int fi, Direction direction);
+  OdometryStatus moveForward(int distance);
+  OdometryStatus moveBackward(int distance);
+  OdometryStatus rotate(int angle);
+  OdometryStatus rotateAbsolute(int angle);
+  OdometryStatus gotoXY(int x, int y, int speed, Direction direction);
+  OdometryStatus arc(int xc, int yc, int fi, Direction direction);
 
-    void endMatch(void);
+  void endMatch(void);
 
 private:
-    bool waitUntilDone(OdometryStatus *odometryStatus = nullptr);
+  bool waitUntilDone(OdometryStatus *odometryStatus = nullptr);
 };
 
 #endif // _DRIVER_ODOMETRY_H_

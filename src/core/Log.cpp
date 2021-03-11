@@ -23,22 +23,22 @@
 
 Log::Log(void)
 {
-    /*
-     * TODO: Implement logg levl configuration (using map)
-     */
-    try
-    {
-        auto settings = Settings().jsonSettings()["Logging"];
-        std::string logName = settings["Name"];
-        std::string logFile = settings["File"];
-        //std::string logLevel = settings["Level"];
+  /*
+   * TODO: Implement logg levl configuration (using map)
+   */
+  try
+  {
+    auto settings = Settings().jsonSettings()["Logging"];
+    std::string logName = settings["Name"];
+    std::string logFile = settings["File"];
+    //std::string logLevel = settings["Level"];
 
-        m_logger = spdlog::basic_logger_mt(logName, logFile);
-        m_logger->set_level(spdlog::level::trace);
-    }
-    catch (...)
-    {
-    }
+    m_logger = spdlog::basic_logger_mt(logName, logFile);
+    m_logger->set_level(spdlog::level::trace);
+  }
+  catch (...)
+  {
+  }
 }
 
 Log::~Log(void)
@@ -47,6 +47,6 @@ Log::~Log(void)
 
 Log &Log::log(void)
 {
-    static Log log;
-    return log;
+  static Log log;
+  return log;
 }

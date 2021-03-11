@@ -27,19 +27,19 @@
 class RobotFramework
 {
 public:
-    RobotFramework(int argc, char *argv[]);
-    virtual ~RobotFramework(void);
+  RobotFramework(int argc, char *argv[]);
+  virtual ~RobotFramework(void);
 
-    int run(void);
+  int run(void);
 
 private:
-    void loadScript(void);
-    void extractPositions(void);
-    void extractTimers(void);
+  void loadScript(void);
+  void extractPositions(void);
+  void extractTimers(void);
 
-    lua_State *m_lua;
-    std::vector<LuaPositionEntry> m_luaPositionEtries;
-    std::vector<LuaTimerEntry> m_luaTimerEntries;
+  lua_State *m_lua;
+  std::vector<LuaPositionEntry> m_luaPositionEtries;
+  std::vector<LuaTimerEntry> m_luaTimerEntries;
 };
 
 #endif // _CORE_ROBOT_FRAMEWORK_H_

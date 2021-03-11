@@ -29,9 +29,9 @@ const int Serial::s_baud = 9600;
 const int Serial::s_readBufferMaxSize = 100;
 
 Serial::Serial(void)
-    : m_fd(0),
-      m_readBuffer(s_readBufferMaxSize),
-      m_readBufferSize(0)
+  : m_fd(0),
+    m_readBuffer(s_readBufferMaxSize),
+    m_readBufferSize(0)
 {
 }
 
@@ -41,134 +41,134 @@ Serial::~Serial(void)
 
 Serial &Serial::serial(void)
 {
-    static Serial serial;
-    return serial;
+  static Serial serial;
+  return serial;
 }
 
 bool Serial::open(void)
 {
-    m_fd = serialOpen(s_port.c_str(), 9600);
-    if (m_fd < 0)
-    {
-        m_fd = 0;
-        return false;
-    }
+  m_fd = serialOpen(s_port.c_str(), 9600);
+  if (m_fd < 0)
+  {
+    m_fd = 0;
+    return false;
+  }
 
-    startAsyncReader();
+  startAsyncReader();
 
-    return true;
+  return true;
 }
 
 bool Serial::close(void)
 {
-    std::unique_lock<std::mutex> lock(m_readerMutex);
-    serialClose(m_fd);
-    return true;
+  std::unique_lock<std::mutex> lock(m_readerMutex);
+  serialClose(m_fd);
+  return true;
 }
 
 bool Serial::send(const SerialMessage &msg)
 {
-    std::unique_lock<std::mutex> lock(m_readerMutex);
-    msg.iterate([&] (uint8_t m) {
-        serialPutchar(m_fd, m);
-    });
-    return true;
+  std::unique_lock<std::mutex> lock(m_readerMutex);
+  msg.iterate([&] (uint8_t m) {
+    serialPutchar(m_fd, m);
+  });
+  return true;
 }
 
 SerialMessage Serial::sendReceive(const SerialMessage &msg)
 {
-    std::unique_lock<std::mutex> lock(m_readerMutex);
+  std::unique_lock<std::mutex> lock(m_readerMutex);
 
-    bool readed = false;
-    SerialMessage response;
+  bool readed = false;
+  SerialMessage response;
 
-    m_readWaitCallbacks[msg.getCommand1() << 8 | msg.getCommand2()] = [&] (const SerialMessage &res) {
-        response = res;
-        readed = false;
-    };
+  m_readWaitCallbacks[msg.getCommand1() << 8 | msg.getCommand2()] = [&] (const SerialMessage &res) {
+    response = res;
+    readed = false;
+  };
 
-    msg.iterate([&] (uint8_t m) {
-        serialPutchar(m_fd, m);
-    });
+  msg.iterate([&] (uint8_t m) {
+    serialPutchar(m_fd, m);
+  });
 
-    int maxIterations = 100;
-    while (!readed)
+  int maxIterations = 100;
+  while (!readed)
+  {
+    using namespace std::chrono_literals;
+
+    lock.unlock();
+    std::this_thread::sleep_for(5ms);
+    lock.lock();
+
+    maxIterations--;
+    if (maxIterations < 0)
     {
-        using namespace std::chrono_literals;
-
-        lock.unlock();
-        std::this_thread::sleep_for(5ms);
-        lock.lock();
-
-        maxIterations--;
-        if (maxIterations < 0)
-        {
-            m_readWaitCallbacks.erase(msg.getCommand1() << 8 | msg.getCommand2());
-            break;
-        }
+      m_readWaitCallbacks.erase(msg.getCommand1() << 8 | msg.getCommand2());
+      break;
     }
+  }
 
-    return response;
+  return response;
 }
 
 void Serial::subscribe(uint8_t cmd1, uint8_t cmd2, const std::function<void (const SerialMessage &)> &callback)
 {
-    std::unique_lock<std::mutex> lock(m_readerMutex);
-    m_readSubscribeCallbacks[cmd1 << 8 | cmd2] = callback;
+  std::unique_lock<std::mutex> lock(m_readerMutex);
+  m_readSubscribeCallbacks[cmd1 << 8 | cmd2] = callback;
 }
 
 void Serial::startAsyncReader(void)
 {
-    m_readerThread = std::thread([&] () {
-        using namespace std::chrono_literals;
+  m_readerThread = std::thread([&] () {
+    using namespace std::chrono_literals;
 
-        int data = serialGetchar(m_fd);
-        if (data != -1)
+    int data = serialGetchar(m_fd);
+    if (data != -1)
+    {
+      m_readBuffer[m_readBufferSize] = static_cast<uint8_t>(data);
+      m_readBufferSize++;
+
+      if ((m_readBufferSize == 1 && m_readBuffer[0] != _COM_ESC) ||
+          (m_readBufferSize == 2 && m_readBuffer[1] != _COM_STX) ||
+          (m_readBufferSize > 1 && m_readBuffer[0] != _COM_ESC && m_readBuffer[1] != _COM_STX) ||
+          (m_readBufferSize >= s_readBufferMaxSize))
+      {
+        m_readBufferSize = 0;
+        return;
+      }
+
+      if (m_readBufferSize > 2 && m_readBuffer[m_readBufferSize - 2] == _COM_ESC && m_readBuffer[m_readBufferSize - 1] == _COM_STX) 
+      {
+        m_readBuffer[0] = _COM_ESC;
+        m_readBuffer[1] = _COM_STX;
+        m_readBufferSize = 2;
+      }
+
+      if (m_readBufferSize > 1)
+      {
+        if (m_readBuffer[m_readBufferSize - 2] == _COM_ESC && m_readBuffer[m_readBufferSize - 1] == _COM_ETX)
         {
-            m_readBuffer[m_readBufferSize] = static_cast<uint8_t>(data);
-            m_readBufferSize++;
+          std::unique_lock<std::mutex> lock(m_readerMutex);
+          uint16_t key = m_readBuffer[2] << 8 | m_readBuffer[3];
 
-            if ((m_readBufferSize == 1 && m_readBuffer[0] != _COM_ESC) ||
-                (m_readBufferSize == 2 && m_readBuffer[1] != _COM_STX) ||
-                (m_readBufferSize > 1 && m_readBuffer[0] != _COM_ESC && m_readBuffer[1] != _COM_STX) ||
-                (m_readBufferSize >= s_readBufferMaxSize))
-            {
-                m_readBufferSize = 0;
-                return;
-            }
+          SerialMessage msg({m_readBuffer[2], m_readBuffer[3]});
+          for (uint8_t i = 4; i < m_readBufferSize - 2; i++)
+          {
+            msg << m_readBuffer[i];
+          }
 
-            if (m_readBufferSize > 2 && m_readBuffer[m_readBufferSize - 2] == _COM_ESC && m_readBuffer[m_readBufferSize - 1] == _COM_STX) 
-            {
-                m_readBuffer[0] = _COM_ESC;
-                m_readBuffer[1] = _COM_STX;
-                m_readBufferSize = 2;
-            }
-
-            if (m_readBufferSize > 1)
-            {
-                if (m_readBuffer[m_readBufferSize - 2] == _COM_ESC && m_readBuffer[m_readBufferSize - 1] == _COM_ETX)
-                {
-                    std::unique_lock<std::mutex> lock(m_readerMutex);
-                    uint16_t key = m_readBuffer[2] << 8 | m_readBuffer[3];
-
-                    SerialMessage msg({m_readBuffer[2], m_readBuffer[3]});
-                    for (uint8_t i = 4; i < m_readBufferSize - 2; i++)
-                    {
-                        msg << m_readBuffer[i];
-                    }
-
-                    if (m_readWaitCallbacks.find(key) != m_readWaitCallbacks.end())
-                    {
-                        m_readWaitCallbacks[key](msg);
-                        m_readWaitCallbacks.erase(key);
-                    }
-                    if (m_readSubscribeCallbacks.find(key) != m_readSubscribeCallbacks.end())
-                    {
-                        m_readSubscribeCallbacks[key](msg);
-                    }
-                }
-            }
+          if (m_readWaitCallbacks.find(key) != m_readWaitCallbacks.end())
+          {
+            m_readWaitCallbacks[key](msg);
+            m_readWaitCallbacks.erase(key);
+          }
+          if (m_readSubscribeCallbacks.find(key) != m_readSubscribeCallbacks.end())
+          {
+            m_readSubscribeCallbacks[key](msg);
+          }
         }
-        std::this_thread::sleep_for(5ms);
-    });
+      }
+    }
+    std::this_thread::sleep_for(5ms);
+  });
 }

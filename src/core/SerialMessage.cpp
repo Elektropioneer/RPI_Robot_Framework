@@ -23,24 +23,24 @@
 
 SerialMessage::SerialMessage(void)
 {
-    m_message.push_back(ESC);
-    m_message.push_back(STX);
-    m_message.push_back(0x00);
-    m_message.push_back(0x00);
-    m_message.push_back(ESC);
-    m_message.push_back(ETX);
+  m_message.push_back(ESC);
+  m_message.push_back(STX);
+  m_message.push_back(0x00);
+  m_message.push_back(0x00);
+  m_message.push_back(ESC);
+  m_message.push_back(ETX);
 }
 
 SerialMessage::SerialMessage(const std::initializer_list<uint8_t> &msg)
 {
-    m_message.push_back(ESC);
-    m_message.push_back(STX);
-    for (auto b : msg)
-    {
-        m_message.push_back(b);
-    }
-    m_message.push_back(ESC);
-    m_message.push_back(ETX);
+  m_message.push_back(ESC);
+  m_message.push_back(STX);
+  for (auto b : msg)
+  {
+      m_message.push_back(b);
+  }
+  m_message.push_back(ESC);
+  m_message.push_back(ETX);
 }
 
 SerialMessage::~SerialMessage(void)
@@ -49,92 +49,92 @@ SerialMessage::~SerialMessage(void)
 
 uint8_t SerialMessage::getCommand1(bool *ok) const
 {
-    if (m_message.size() < 3)
-    {
-        if (ok)
-        {
-            *ok = false;
-        }
-
-        return 0;
-    }
-
+  if (m_message.size() < 3)
+  {
     if (ok)
     {
-        *ok = true;
+      *ok = false;
     }
 
-    return m_message[2];
+    return 0;
+  }
+
+  if (ok)
+  {
+    *ok = true;
+  }
+
+  return m_message[2];
 }
 
 uint8_t SerialMessage::getCommand2(bool *ok) const
 {
-    if (m_message.size() < 4)
-    {
-        if (ok)
-        {
-            *ok = false;
-        }
-
-        return 0;
-    }
-
+  if (m_message.size() < 4)
+  {
     if (ok)
     {
-        *ok = true;
+      *ok = false;
     }
 
-    return m_message[2];
+    return 0;
+  }
+
+  if (ok)
+  {
+    *ok = true;
+  }
+
+  return m_message[2];
 }
 
 uint8_t SerialMessage::at(int index, bool *ok) const
 {
-    if (m_message.size() <= index)
-    {
-        if (ok)
-        {
-            *ok = false;
-        }
-
-        return 0;
-    }
-
+  if (m_message.size() <= index)
+  {
     if (ok)
     {
-        *ok = true;
+      *ok = false;
     }
 
-    return m_message[index];
+    return 0;
+  }
+
+  if (ok)
+  {
+    *ok = true;
+  }
+
+  return m_message[index];
 }
 
 bool SerialMessage::set(int index, uint8_t value)
 {
-    if (m_message.size() <= index)
-    {
-        return false;
-    }
+  if (m_message.size() <= index)
+  {
+    return false;
+  }
 
-    m_message[index] = value;
+  m_message[index] = value;
 
-    return true;
+  return true;
 }
 
 bool SerialMessage::append(uint8_t value)
 {
-    m_message.insert(m_message.end() - 3, value);
-    return true;
+  m_message.insert(m_message.end() - 3, value);
+  return true;
 }
 
 void SerialMessage::iterate(const std::function<void (uint8_t)> &callback) const
 {
-    for (auto msg : m_message)
-    {
-        callback(msg);
-    }
+  for (auto msg : m_message)
+  {
+    callback(msg);
+  }
 }
 
 SerialMessage &operator<<(SerialMessage &msg, uint8_t data)
 {
-    msg.append(data);
-    return msg;
+  msg.append(data);
+  return msg;
 }

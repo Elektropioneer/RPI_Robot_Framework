@@ -19,6 +19,6 @@
 
 int main(int argc, char *argv[])
 {
-    RobotFramework rrf(argc, argv);
-    return rrf.run();
+  RobotFramework rrf(argc, argv);
+  return rrf.run();
 }

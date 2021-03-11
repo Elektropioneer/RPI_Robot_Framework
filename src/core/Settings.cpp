@@ -24,8 +24,8 @@ const char *Settings::s_settingsPath = "rrf.conf";
 
 Settings::Settings(void)
 {
-    std::ifstream iFile(s_settingsPath);
-    iFile >> m_json;
+  std::ifstream iFile(s_settingsPath);
+  iFile >> m_json;
 }
 
 Settings::~Settings(void)

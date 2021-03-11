@@ -22,8 +22,8 @@
 
 struct LuaTimerEntry
 {
-    int tick;
-    int callbackLuaRef;
+  int tick;
+  int callbackLuaRef;
 };
 
 #endif // _CORE_LUA_TIMER_ENTRY_H_

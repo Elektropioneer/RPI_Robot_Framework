@@ -24,18 +24,18 @@
 class Log
 {
 public:
-    Log(const Log &) = delete;
-    void operator=(const Log &) = delete;
-    virtual ~Log(void);
+  Log(const Log &) = delete;
+  void operator=(const Log &) = delete;
+  virtual ~Log(void);
 
-    static Log &log(void);
+  static Log &log(void);
 
-    inline std::shared_ptr<spdlog::logger> coreLogger() { return m_logger; }
+  inline std::shared_ptr<spdlog::logger> coreLogger() { return m_logger; }
 
 private:
-    Log(void);
+  Log(void);
 
-    std::shared_ptr<spdlog::logger> m_logger;
+  std::shared_ptr<spdlog::logger> m_logger;
 };
 
 #define LOG_ERROR(...) Log::log().coreLogger()->error(__VA_ARGS__)

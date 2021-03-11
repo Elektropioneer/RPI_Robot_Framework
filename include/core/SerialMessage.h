@@ -26,20 +26,20 @@
 class SerialMessage
 {
 public:
-    SerialMessage(void);
-    SerialMessage(const std::initializer_list<uint8_t> &msg);
-    ~SerialMessage(void);
+  SerialMessage(void);
+  SerialMessage(const std::initializer_list<uint8_t> &msg);
+  ~SerialMessage(void);
 
-    uint8_t getCommand1(bool *ok = nullptr) const;
-    uint8_t getCommand2(bool *ok = nullptr) const;
-    uint8_t at(int index, bool *ok = nullptr) const;
-    bool set(int index, uint8_t value);
-    bool append(uint8_t value);
+  uint8_t getCommand1(bool *ok = nullptr) const;
+  uint8_t getCommand2(bool *ok = nullptr) const;
+  uint8_t at(int index, bool *ok = nullptr) const;
+  bool set(int index, uint8_t value);
+  bool append(uint8_t value);
 
-    void iterate(const std::function<void (uint8_t)> &callback) const;
+  void iterate(const std::function<void (uint8_t)> &callback) const;
 
 private:
-    std::vector<uint8_t> m_message;
+  std::vector<uint8_t> m_message;
 };
 
 SerialMessage &operator<<(SerialMessage &msg, uint8_t data);
